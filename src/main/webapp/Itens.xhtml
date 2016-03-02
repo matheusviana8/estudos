@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/WEB-INF/templates/Layout.xhtml">
+	
+	<ui:define name="content">
+		<h1 class="aw-page-title">Título da sua página</h1>
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{cadastroItemBean.inicializar}" />
+		</f:metadata>
+
+		<h:form id="frm">
+
+			<p:toolbar>
+				<p:toolbarGroup>
+
+					<p:commandButton value="Novo" action="#{cadastroItemBean.novoItem}"
+						oncomplete="PF('itemDialog').show()" process="@this"
+						update="itemDialog">
+						<p:resetInput target="itemPanel" />
+					</p:commandButton>
+
+				</p:toolbarGroup>
+			</p:toolbar>
+
+
+			<div class="ui-fluid">
+
+				<p:dataTable id="itensTable" value="#{cadastroItemBean.itens}"
+					selection="#{cadastroItemBean.item}" selectionMode="single"
+					rowKey="#{item.id}" var="item"
+					emptyMessage="Nenhum item adicionado." reflow="true"
+					style="margin-top: 10px">
+
+					<p:ajax event="rowSelect" oncomplete="PF('itemDialog').show()"
+						process="itensTable" update=":frm:itemDialog" />
+
+					<p:column headerText="Produto">
+						<h:outputText value="#{item.produto.descricao}" />
+					</p:column>
+
+					<p:column headerText="Marca">
+						<h:outputText value="#{item.loja.nome}" />
+					</p:column>
+					<p:column headerText="Preço">
+						<h:outputText value="#{item.preco}" />
+					</p:column>
+
+				</p:dataTable>
+
+			</div>
+
+			<p:dialog widgetVar="itemDialog" id="itemDialog"
+				header="#{cadastroItemBean.editando ? 'Edição de item' : 'Novo item'}"
+				resizable="false" style="min-width: 300px" responsive="true">
+
+				<h:panelGroup id="itemPanel" layout="block" styleClass="ui-fluid">
+					<p:messages id="msgDialog" autoUpdate="false" />
+
+					<p:panelGrid columns="2" layout="grid"
+						styleClass="panelgrid-noborder"
+						columnClasses="ui-grid-col-4, ui-grid-col-8">
+
+						<p:outputLabel value="Produto:" for="produto" />
+              			<p:autoComplete id="produto" value="#{cadastroItemBean.item.produto}" completeMethod="#{cadastroItemBean.complete}"
+                                var="p" itemLabel="#{p.descricao}" itemValue="#{p}"
+                                forceSelection="true"
+                                >
+                </p:autoComplete>
+
+						<p:outputLabel value="Valor" for="valor" />
+						<p:inputText id="valor" value="#{cadastroItemBean.item.preco}" />
+
+
+						<p:outputLabel />
+						<p:commandButton value="Salvar"
+							action="#{cadastroItemBean.salvar}" process="itemPanel"
+							update="itemPanel itensTable"
+							oncomplete="if (!args.validationFailed) PF('itemDialog').hide()" />
+
+					</p:panelGrid>
+
+				</h:panelGroup>
+
+			</p:dialog>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
