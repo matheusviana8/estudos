@@ -25,6 +25,7 @@ public class CadastroProdutoBean implements Serializable {
 	private Produto produto = new Produto();
 	private List<Produto> produtos;
 
+	
 	public void novoItem() {
 		produto = new Produto();
 	}
